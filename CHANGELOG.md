@@ -8,9 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- **Bedrock gateway for Keys mode.** A deployment can send Claude Code inference to its own gateway that accepts the Bedrock `InvokeModel` API with a Bearer key, by setting the Terraform variable `bedrock_gateway_url`. Bedrock keys at the platform, space and personal scope are then gateway keys. OpenCode and Codex never receive a gateway key and are shown as unavailable for it; IAM mode and Kiro are unchanged. `bedrock_gateway_disable_content_type_guard` covers gateways that change the stream content type. See [Bedrock gateway](docs/using-the-platform/bedrock-gateway.md).
-- **`install.sh update --reapply`.** Deploys the installed release again, so a change to the managed `.tfvars` file can be applied without a new release. Without the option, `update` still stops with `Already on AI-DLC v<version>.` when the release is unchanged.
-- **Model aliases as a deployment setting.** `bedrock_model_aliases` sets the models that `opus`, `sonnet` and `haiku` resolve to in workflow blocks and pins Claude Code's own aliases to the same models, for accounts and gateways that do not serve the built-in targets.
+- **Bedrock gateway for Keys mode.** A deployment can send Claude Code inference to its own gateway that accepts the Bedrock `InvokeModel` API with a Bearer key, by setting the Terraform variable `bedrock_gateway_url`. Bedrock keys at the platform, space and personal scope are then gateway keys. OpenCode and Codex never receive a gateway key and are shown as unavailable for it; IAM mode and Kiro are unchanged. `bedrock_gateway_disable_content_type_guard` covers gateways that change the stream content type. See [Bedrock gateway](docs/using-the-platform/bedrock-gateway.md) ([#774](https://github.com/aws-samples/sample-collaborative-ai-dlc/pull/774)).
+- **`install.sh update --reapply`.** Deploys the installed release again, so a change to the managed `.tfvars` file can be applied without a new release. Without the option, `update` still stops with `Already on AI-DLC v<version>.` when the release is unchanged ([#774](https://github.com/aws-samples/sample-collaborative-ai-dlc/pull/774)).
+- **Model aliases as a deployment setting.** `bedrock_model_aliases` sets the models that `opus`, `sonnet` and `haiku` resolve to in workflow blocks and pins Claude Code's own aliases to the same models, for accounts and gateways that do not serve the built-in targets ([#774](https://github.com/aws-samples/sample-collaborative-ai-dlc/pull/774)).
 
 ### Notes
 
