@@ -4,6 +4,7 @@ import { SSMClient } from '@aws-sdk/client-ssm';
 import { executionMetaKey } from '../shared/v2-process-keys.js';
 import { assertScopeAvailable } from '../shared/agent-auth-inventory.js';
 import { redeemAgentBinding } from '../shared/agent-auth-redemption.js';
+import { bedrockGatewayUrl } from '../shared/agent-credential-lease.js';
 import { createAgentConnectionRepository } from '../shared/agent-connection-repository.js';
 import {
   credentialChangeAffects,
@@ -74,6 +75,8 @@ export const authorizeAgentCredentialRequest = async (
       );
     }
   }
+  // Read before any key: an invalid gateway URL fails the request instead of leasing API keys.
+  const gatewayUrl = bedrockGatewayUrl(env);
   const credentials = await Promise.all(
     claims.bindings.map(async (binding) => {
       try {
@@ -87,6 +90,7 @@ export const authorizeAgentCredentialRequest = async (
           ssm: ssmClient,
           base: env.AGENT_SETTINGS_SSM_PREFIX || '',
           adapters,
+          bedrockGatewayUrl: gatewayUrl,
         });
       } catch (error) {
         if (!context.isolateDiscoveryFailure(binding)) throw error;
