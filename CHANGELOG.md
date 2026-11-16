@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **Bedrock gateway for Keys mode.** A deployment can send Claude Code inference to its own gateway that accepts the Bedrock `InvokeModel` API with a Bearer key, by setting the Terraform variable `bedrock_gateway_url`. Bedrock keys at the platform, space and personal scope are then gateway keys. OpenCode and Codex never receive a gateway key and are shown as unavailable for it; IAM mode and Kiro are unchanged. `bedrock_gateway_disable_content_type_guard` covers gateways that change the stream content type. See [Bedrock gateway](docs/using-the-platform/bedrock-gateway.md).
+- **`install.sh update --reapply`.** Deploys the installed release again, so a change to the managed `.tfvars` file can be applied without a new release. Without the option, `update` still stops with `Already on AI-DLC v<version>.` when the release is unchanged.
+- **Model aliases as a deployment setting.** `bedrock_model_aliases` sets the models that `opus`, `sonnet` and `haiku` resolve to in workflow blocks and pins Claude Code's own aliases to the same models, for accounts and gateways that do not serve the built-in targets.
+
+### Notes
+
+- **Bedrock gateway on an existing deployment.** Follow the order in [Bedrock gateway](docs/using-the-platform/bedrock-gateway.md#set-it-up). `deploy-terraform.sh` refuses to set, change or remove `bedrock_gateway_url` while intents are started, running or parked (`AIDLC_ALLOW_ACTIVE_EXECUTIONS=1` applies anyway). A runtime from before the deployment sends a saved Bedrock key to Amazon Bedrock, so gateway keys are saved last: after Standard's revision from this release is published, every managed environment has a revision built on it after the deployment, and earlier runtime sessions have ended. Intents that run OpenCode or Codex with a key cannot continue, and intents in a managed environment keep their earlier revision and never use the gateway.
+- **Reserved names for custom MCP secrets.** A custom MCP server can no longer reference a secret named `ANTHROPIC_BEDROCK_BASE_URL`, `CLAUDE_CODE_SKIP_BEDROCK_AUTH`, `CLAUDE_CODE_DISABLE_BEDROCK_CONTENT_TYPE_GUARD`, `ANTHROPIC_DEFAULT_OPUS_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL`, `ANTHROPIC_DEFAULT_HAIKU_MODEL` or `AIDLC_BEDROCK_GATEWAY_TOKEN`. The runtime now sets these for Claude Code, and such a reference fails with the existing reserved-name error.
+
 ## [2.3.1] - 2026-11-13
 
 Hotfix that keeps AgentCore microVM runtimes on platform V1 ([#758](https://github.com/aws-samples/sample-collaborative-ai-dlc/pull/758)) and passes domain and SSO settings to release deployments ([#769](https://github.com/aws-samples/sample-collaborative-ai-dlc/pull/769)).

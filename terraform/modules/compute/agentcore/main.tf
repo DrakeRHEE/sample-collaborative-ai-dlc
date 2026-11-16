@@ -795,6 +795,14 @@ locals {
     AIDLC_MCP_GATEWAY_TARGET = aws_bedrockagentcore_gateway_target.aidlc[0].name
     } : {}, local.engine_data_enabled ? {
     ENGINE_DATA_FUNCTION = module.engine_data_lambda[0].lambda_function_name
+    # Inference routing a deployment opts into. Absent keys keep the runtime's
+    # environment, and with it every published environment's, as it was.
+    } : {}, var.bedrock_gateway_url != "" ? {
+    BEDROCK_GATEWAY_URL = var.bedrock_gateway_url
+    } : {}, var.bedrock_gateway_url != "" && var.bedrock_gateway_disable_content_type_guard ? {
+    BEDROCK_GATEWAY_DISABLE_CONTENT_TYPE_GUARD = "true"
+    } : {}, length(var.bedrock_model_aliases) > 0 ? {
+    AIDLC_MODEL_ALIASES = jsonencode(var.bedrock_model_aliases)
   } : {})
 }
 
