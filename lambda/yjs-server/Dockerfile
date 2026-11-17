@@ -2,10 +2,16 @@ FROM public.ecr.aws/docker/library/node:24.15.0-alpine3.23@sha256:d1b3b4da11eefd
 
 WORKDIR /app
 
-COPY --chown=node:node --chmod=0644 package.json package-lock.json ./
+COPY --chown=node:node --chmod=0644 yjs-server/package.json yjs-server/package-lock.json ./
 RUN npm ci --omit=dev
 
-COPY --chown=node:node --chmod=0644 server.js service.js rooms.js protocol.js cluster.js aws-store.js config.js doc-name.js realtime-token.js ./
+COPY --chown=node:node --chmod=0644 shared/space-permissions.js shared/space-membership.js shared/business-roles.js shared/business-role-catalog.json ./shared/
+COPY --chown=node:node --chmod=0644 shared/policies/space.cedar ./shared/policies/
+COPY --chown=node:node --chmod=0644 yjs-server/*.js ./yjs-server/
+
+RUN chmod 0755 /app/shared /app/shared/policies /app/yjs-server
+
+WORKDIR /app/yjs-server
 
 USER node
 

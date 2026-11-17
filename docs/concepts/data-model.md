@@ -462,10 +462,15 @@ For the surrounding AWS components and other storage services, see
 
 The access table stores one membership per space and stable user ID:
 `pk = SPACE#<spaceId>`, `sk = MEMBER#<userId>`. It carries `userId`,
-`membershipRole` (`owner` or `member`), creation/update timestamps, and a revision.
+`membershipRole` (`owner`, `member`, or `viewer`), creation/update timestamps, and a revision.
 Its `by-user` GSI uses `userId` / `pk`, projecting all attributes. Space member
 queries and access checks use consistent base-table reads; the user-space list
 index is eventually consistent and cannot authorize protected content.
+
+Membership items also hold locally assigned business roles (`localRoles`) and
+excluded SSO roles (`excludedRoles`). Inherited roles are calculated at read time.
+SSO mapping additions live at `PLATFORM` / `SSO#<providerId>` in the access table;
+they combine with the Terraform baseline without storing the merged result.
 
 A separate audit table stores append-only permission changes under the same space
 partition, keyed by `AUDIT#<ISO-time>#<changeId>`. It records actor, action,
@@ -473,6 +478,8 @@ target user, before/after membership, timestamp, and change ID. Membership and
 history writes commit together in a DynamoDB transaction. Both tables have PITR,
 the installation's encryption/deletion protection, and no TTL. Space deletion
 removes access records while retaining audit history.
+Business-role and SSO-mapping changes also use revision-checked transactions with
+audit entries; platform changes use the `PLATFORM` partition.
 
 See [Space membership migration](../development/membership-migration.md) for
 installation ordering, legacy Admin conversion, pagination, and recovery.

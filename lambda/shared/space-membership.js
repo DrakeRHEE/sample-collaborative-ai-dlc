@@ -25,9 +25,9 @@ export const ssoMappingKey = (providerId) => ({ pk: 'PLATFORM', sk: `SSO#${provi
 // record; the serialized form approximates the stored item size.
 const MAX_ITEM_BYTES = 350_000;
 
-// Accepted only at the API/migration boundary. Persisted access roles have two values.
+// Accepted only at the API/migration boundary. Persisted access roles are owner, member, and viewer.
 export const normalizeMembershipRole = (role) => (role === 'admin' ? 'owner' : role);
-const validRole = (role) => role === 'owner' || role === 'member';
+const validRole = (role) => ['owner', 'member', 'viewer'].includes(role);
 const conflict = () =>
   Object.assign(new Error('Membership changed. Reload and try again.'), { statusCode: 409 });
 
